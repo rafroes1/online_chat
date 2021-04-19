@@ -17,12 +17,15 @@ class _ChatScreenState extends State<ChatScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   FirebaseUser _currentUser;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     FirebaseAuth.instance.onAuthStateChanged.listen((user) {
-      _currentUser = user;
+      setState(() {
+        _currentUser = user;
+      });
     });
   }
 
@@ -63,17 +66,27 @@ class _ChatScreenState extends State<ChatScreen> {
     Map<String, dynamic> data = {
       "uid" : user.uid,
       "senderName" : user.displayName,
-      "senderPhotoUrl" : user.photoUrl
+      "senderPhotoUrl" : user.photoUrl,
+      "time" : Timestamp.now()
     };
 
     if (imgFile != null) {
       StorageUploadTask task = FirebaseStorage.instance
           .ref()
-          .child(DateTime.now().millisecondsSinceEpoch.toString())
+          .child(user.uid) //each image will be stored in the sender folder
+          .child(DateTime.now().millisecondsSinceEpoch.toString()) //img id is the timestamp of when it was sent
           .putFile(imgFile);
+
+      setState(() {
+        _isLoading = true;
+      });
 
       StorageTaskSnapshot taskSnaptshot = await task.onComplete;
       data["imgUrl"] = await taskSnaptshot.ref.getDownloadURL();
+
+      setState(() {
+        _isLoading = false;
+      });
     }
 
     if (text != null) data["text"] = text;
@@ -85,15 +98,25 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("My Chat"),
+        title: Text( _currentUser != null ? "Hello, ${_currentUser.displayName}" : "My Chat"),
         centerTitle: true,
         elevation: 0,
+        actions: <Widget>[
+          _currentUser != null ? IconButton(icon: Icon(Icons.exit_to_app), onPressed: (){
+            FirebaseAuth.instance.signOut();
+            googleSignIn.signOut();
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("Logged out successfully"),
+              backgroundColor: Colors.redAccent,
+            ));
+          }) : Container()
+        ],
       ),
       body: Column(
         children: <Widget>[
           Expanded(
             child: StreamBuilder(
-              stream: Firestore.instance.collection("messages").snapshots(),
+              stream: Firestore.instance.collection("messages").orderBy("time").snapshots(),
               builder: (context, snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.none:
@@ -107,7 +130,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
                     return ListView.builder(
                       itemBuilder: (context, index) {
-                        return ChatMessage(documents[index].data, true);
+                        //verifies if the message was sent by the current user
+                        return ChatMessage(documents[index].data, documents[index].data["uid"] == _currentUser?.uid);
                       },
                       itemCount: documents.length,
                       reverse: true,
@@ -116,6 +140,7 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
           ),
+          _isLoading ? LinearProgressIndicator() : Container(),
           TextComposer(_sendMessage)
         ],
       ),
