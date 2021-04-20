@@ -19,9 +19,9 @@ This is a simple chat app that has the main features of a simple chat app. You c
 - [ ] App on Apple Store.
 
 ## Mobile layout
-![Splash](https://github.com/rafroes1/generalAppInfos/blob/main/assets/contact_agenda/splash.jpeg) ![Main Page](https://github.com/rafroes1/generalAppInfos/blob/main/assets/contact_agenda/main%20page.jpeg) ![New Contact](https://github.com/rafroes1/generalAppInfos/blob/main/assets/contact_agenda/new%20contact.jpeg) 
+![Login](https://github.com/rafroes1/generalAppInfos/blob/main/assets/online_chat/logging%20in.jpeg) ![Main Page](https://github.com/rafroes1/generalAppInfos/blob/main/assets/online_chat/Main%20screen.jpeg) ![Chat](https://github.com/rafroes1/generalAppInfos/blob/main/assets/online_chat/chat.jpeg) 
 
-![Options](https://github.com/rafroes1/generalAppInfos/blob/main/assets/contact_agenda/options.jpeg) ![Galery Camera](https://github.com/rafroes1/generalAppInfos/blob/main/assets/contact_agenda/galerry%20camera.jpeg) ![Order](https://github.com/rafroes1/generalAppInfos/blob/main/assets/contact_agenda/order.jpeg)
+![Logged out](https://github.com/rafroes1/generalAppInfos/blob/main/assets/online_chat/logged%20out.jpeg) ![Sending photo](https://github.com/rafroes1/generalAppInfos/blob/main/assets/online_chat/sending%20photo.jpeg)
 
 ## Application features
 
